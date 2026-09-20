@@ -1,0 +1,19 @@
+services:
+  api:
+    volumes: []
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      DATABASE_URL: "postgresql+psycopg://postgres:postgres@host.docker.internal:5432/fastapi_db"
+      REDIS_URL: "redis://host.docker.internal:6379/0"
+    command: >
+      sh -c "alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  celery_worker:
+    volumes: []
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      DATABASE_URL: "postgresql+psycopg://postgres:postgres@host.docker.internal:5432/fastapi_db"
+      REDIS_URL: "redis://host.docker.internal:6379/0"
