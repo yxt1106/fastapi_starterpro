@@ -18,8 +18,6 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - OLLAMA_BASE_URL=http://ollama:11434/v1
       - EMBEDDING_BASE_URL=http://ollama:11434/v1
-    volumes:
-      - .:/app
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       db:
@@ -27,9 +25,9 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health/"]
       interval: 10s
-      timeout: 5s
+      timeout: 15s
       retries: 10
       start_period: 15s
 
@@ -73,8 +71,6 @@ services:
     build: .
     container_name: fastapi-starter-worker
     command: celery -A app.worker.celery_app worker --loglevel=info
-    volumes:
-      - .:/app
     environment:
       - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/fastapi_db
       - REDIS_URL=redis://redis:6379/0
@@ -103,8 +99,6 @@ services:
     profiles:
       - monitor
     command: celery -A app.worker.celery_app flower --port=5555
-    volumes:
-      - .:/app
     ports:
       - "5555:5555"
     environment:
