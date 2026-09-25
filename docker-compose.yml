@@ -9,6 +9,7 @@ services:
     platform: linux/amd64
     build: .
     container_name: fastapi-starter-api
+    restart: unless-stopped
     ports:
       - "8000:8000"
     env_file:
@@ -70,6 +71,7 @@ services:
     platform: linux/amd64
     build: .
     container_name: fastapi-starter-worker
+    restart: unless-stopped
     command: celery -A app.worker.celery_app worker --loglevel=info
     environment:
       - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/fastapi_db
